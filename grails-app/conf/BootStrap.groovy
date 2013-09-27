@@ -46,6 +46,8 @@ import com.netflix.ice.basic.BasicResourceService
 import com.netflix.ice.basic.BasicWeeklyCostEmailService
 import com.netflix.ice.reader.ApplicationGroupService
 
+import com.netflix.ice.basic.MedistranoResourceService
+
 class BootStrap {
     private static boolean initialized = false;
     private static Logger logger = LoggerFactory.getLogger(BootStrap.class);
@@ -172,8 +174,8 @@ class BootStrap {
                     Ec2InstanceReservationPrice.ReservationUtilization.valueOf(prop.getProperty("ice.reservationUtilization", "HEAVY"));
 
                 properties.setProperty(IceOptions.CUSTOM_TAGS, prop.getProperty(IceOptions.CUSTOM_TAGS, ""));
-                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new BasicResourceService();
-                
+                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new MedistranoResourceService();
+
                 properties.setProperty(IceOptions.RESOURCE_GROUP_COST, prop.getProperty(IceOptions.RESOURCE_GROUP_COST, "modeled"));
 
                 processorConfig = new ProcessorConfig(
@@ -197,7 +199,7 @@ class BootStrap {
                 if (prop.getProperty(IceOptions.CURRENCY_SIGN) != null)
                     properties.setProperty(IceOptions.CURRENCY_SIGN, prop.getProperty(IceOptions.CURRENCY_SIGN));
 
-                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new BasicResourceService();
+                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new MedistranoResourceService();
                 ApplicationGroupService applicationGroupService = new BasicS3ApplicationGroupService();
                 ProductService productService = new BasicProductService();
                 BasicWeeklyCostEmailService weeklyEmailService = null;

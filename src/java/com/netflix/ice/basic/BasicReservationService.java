@@ -384,9 +384,14 @@ public class BasicReservationService extends Poller implements ReservationServic
         Ec2InstanceReservationPrice ec2Price =
             ec2InstanceReservationPrices.get(new Ec2InstanceReservationPrice.Key(region, usageType));
 
-        double tier = getEc2Tier(time);
-        return ec2Price.hourlyPrice.getPrice(null).getPrice(tier) +
-               ec2Price.upfrontPrice.getPrice(null).getUpfrontAmortized(time, reservationPeriod, tier);
+        if (ec2Price == null) {
+            return 0.0;
+        }
+        else {
+            double tier = getEc2Tier(time);
+            return ec2Price.hourlyPrice.getPrice(null).getPrice(tier) +
+                   ec2Price.upfrontPrice.getPrice(null).getUpfrontAmortized(time, reservationPeriod, tier);
+        }
     }
 
     public ReservationInfo getReservation(
