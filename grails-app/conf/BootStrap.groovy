@@ -46,8 +46,6 @@ import com.netflix.ice.basic.BasicResourceService
 import com.netflix.ice.basic.BasicWeeklyCostEmailService
 import com.netflix.ice.reader.ApplicationGroupService
 
-import com.netflix.ice.basic.MedistranoResourceService
-
 class BootStrap {
     private static boolean initialized = false;
     private static Logger logger = LoggerFactory.getLogger(BootStrap.class);
@@ -143,6 +141,7 @@ class BootStrap {
             properties.setProperty(IceOptions.WORK_S3_BUCKET_PREFIX, prop.getProperty(IceOptions.WORK_S3_BUCKET_PREFIX));
 
             if ("true".equals(prop.getProperty("ice.processor"))) {
+                logger.info("Processor: configuring properties in bootstrap");
 
                 properties.setProperty(IceOptions.LOCAL_DIR, prop.getProperty("ice.processor.localDir"));
                 properties.setProperty(IceOptions.BILLING_S3_BUCKET_NAME, prop.getProperty(IceOptions.BILLING_S3_BUCKET_NAME));
@@ -174,7 +173,14 @@ class BootStrap {
                     Ec2InstanceReservationPrice.ReservationUtilization.valueOf(prop.getProperty("ice.reservationUtilization", "HEAVY"));
 
                 properties.setProperty(IceOptions.CUSTOM_TAGS, prop.getProperty(IceOptions.CUSTOM_TAGS, ""));
-                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new MedistranoResourceService();
+
+                if (StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS))) {
+                    logger.info("Processor: no custom tags found to configure in bootstrap");
+                } else {
+                    logger.info("Processor: configuring the following custom tags - " + properties.getProperty(IceOptions.CUSTOM_TAGS));
+                }
+
+                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new BasicResourceService();
 
                 properties.setProperty(IceOptions.RESOURCE_GROUP_COST, prop.getProperty(IceOptions.RESOURCE_GROUP_COST, "modeled"));
 
@@ -191,6 +197,8 @@ class BootStrap {
             }
 
             if ("true".equals(prop.getProperty("ice.reader"))) {
+                logger.info("Reader: configuring properties in bootstrap");
+
                 properties.setProperty(IceOptions.LOCAL_DIR, prop.getProperty("ice.reader.localDir"));
                 if (prop.getProperty(IceOptions.MONTHLY_CACHE_SIZE) != null)
                     properties.setProperty(IceOptions.MONTHLY_CACHE_SIZE, prop.getProperty(IceOptions.MONTHLY_CACHE_SIZE));
@@ -199,7 +207,15 @@ class BootStrap {
                 if (prop.getProperty(IceOptions.CURRENCY_SIGN) != null)
                     properties.setProperty(IceOptions.CURRENCY_SIGN, prop.getProperty(IceOptions.CURRENCY_SIGN));
 
-                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new MedistranoResourceService();
+                properties.setProperty(IceOptions.CUSTOM_TAGS, prop.getProperty(IceOptions.CUSTOM_TAGS, ""));
+
+                if (StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS))) {
+                    logger.info("Reader: no custom tags found to configure in bootstrap");
+                } else {
+                    logger.info("Reader: configuring the following custom tags - " + properties.getProperty(IceOptions.CUSTOM_TAGS));
+                }
+
+                ResourceService resourceService = StringUtils.isEmpty(properties.getProperty(IceOptions.CUSTOM_TAGS)) ? null : new BasicResourceService();
                 ApplicationGroupService applicationGroupService = new BasicS3ApplicationGroupService();
                 ProductService productService = new BasicProductService();
                 BasicWeeklyCostEmailService weeklyEmailService = null;
