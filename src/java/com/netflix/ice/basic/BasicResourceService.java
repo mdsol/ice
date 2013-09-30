@@ -30,14 +30,14 @@ public class BasicResourceService extends ResourceService {
 
         // Use bucket name for S3 resources
         if (product == Product.s3) {
-            return (resourceId).toLowerCase();
+            return resourceId.toLowerCase();
         }
 
         String productName = "";
         String result = "";
         int productIndex = header.indexOf("user:Product");
 
-        if (productIndex > 0 && lineItem.length > productIndex && !StringUtils.isEmpty(lineItem[productIndex])) {
+        if (productIndex > 0 && lineItem.length > productIndex && StringUtils.isNotEmpty(lineItem[productIndex])) {
             productName = lineItem[productIndex];
 
             if (productName.contains("ztestz")) {
@@ -45,13 +45,14 @@ public class BasicResourceService extends ResourceService {
             } else {
                 for (String tag: processorConfig.customTags) {
                     int index = header.indexOf(tag);
-                    if (index > 0 && lineItem.length > index && !StringUtils.isEmpty(lineItem[index]))
+                    if (index > 0 && lineItem.length > index && StringUtils.isNotEmpty(lineItem[index])) {
                         result = StringUtils.isEmpty(result) ? lineItem[index] : result + "_" + lineItem[index];
+                    }
                 }
             }
         }
 
-        return StringUtils.isEmpty(result) ? product.name : result;
+        return StringUtils.isEmpty(result) ? product.name.toLowerCase() : result.toLowerCase();
     }
 
     @Override
