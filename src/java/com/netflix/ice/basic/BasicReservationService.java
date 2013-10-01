@@ -385,6 +385,7 @@ public class BasicReservationService extends Poller implements ReservationServic
             ec2InstanceReservationPrices.get(new Ec2InstanceReservationPrice.Key(region, usageType));
 
         if (ec2Price == null) {
+            logger.trace("Unable to get reservation price for usageType: " + usageType.name);
             return 0.0;
         }
         else {
